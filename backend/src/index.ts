@@ -3,7 +3,7 @@ import cors from "cors";
 import dotenv from "dotenv";
 import multer from "multer";
 import { removeBackground } from "./services/backgroundRemoval";
-import { flipHorizontal } from "./services/imageProcessor";
+import { flipHorizontal } from "./services/flipImage";
 
 dotenv.config();
 
