@@ -60,3 +60,6 @@ npm run dev                  # runs on http://localhost:5173
 | `POST` | `/api/upload` | Upload and process an image (multipart `image` field) |
 | `DELETE` | `/api/images/:publicId` | Delete a stored image from Cloudinary |
 
+## Security considerations
+The DELETE endpoint has no auth. In production this would require
+ownership verification (e.g. signed delete tokens or session-based auth).
