@@ -9,6 +9,7 @@ import { config } from "./config";
 import { removeBackground } from "./services/backgroundRemoval";
 import { flipHorizontal } from "./services/flipImage";
 import { uploadImage } from "./services/cloudStorage";
+import deleteRouter from "./routes/delete";
 
 const app = express();
 const PORT = config.port;
@@ -31,6 +32,7 @@ interface UploadErrorResponse {
 
 app.use(cors());
 app.use(express.json());
+app.use("/api/images", deleteRouter);
 
 app.get("/health", (_req: Request, res: Response<HealthResponse>) => {
   res.json({ status: "ok" });

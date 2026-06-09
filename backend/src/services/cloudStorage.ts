@@ -29,6 +29,16 @@ export async function uploadImage(
   };
 }
 
+export class ImageNotFoundError extends Error {
+  constructor(publicId: string) {
+    super(`Image not found: ${publicId}`);
+    this.name = "ImageNotFoundError";
+  }
+}
+
 export async function deleteImage(publicId: string): Promise<void> {
-  await cloudinary.uploader.destroy(publicId);
+  const result = await cloudinary.uploader.destroy(publicId);
+  if (result.result === "not found") {
+    throw new ImageNotFoundError(publicId);
+  }
 }
