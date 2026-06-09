@@ -27,8 +27,10 @@ dist-ssr
 node_modules
 dist
 .env
+
 CLAUDE.md
 .claude/
-
+/docs
 # Test images
 cat.webp
+

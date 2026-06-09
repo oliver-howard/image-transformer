@@ -7,6 +7,7 @@ interface DeleteSuccessResponse {
 }
 
 interface DeleteErrorResponse {
+  success: false;
   error: string;
 }
 
@@ -20,16 +21,26 @@ router.delete(
   ) => {
     const publicId = decodeURIComponent(req.params.publicId);
 
+    if (!publicId || publicId.trim().length === 0) {
+      res.status(400).json({ success: false, error: "Invalid image ID" });
+      return;
+    }
+
+    if (publicId.includes("..") || publicId.startsWith("/")) {
+      res.status(400).json({ success: false, error: "Invalid image ID" });
+      return;
+    }
+
     try {
       await deleteImage(publicId);
       res.json({ success: true, message: "Image deleted" });
     } catch (err) {
       if (err instanceof ImageNotFoundError) {
-        res.status(404).json({ error: "Image not found" });
+        res.status(404).json({ success: false, error: "Image not found" });
         return;
       }
       const message = err instanceof Error ? err.message : "Unexpected error";
-      res.status(502).json({ error: message });
+      res.status(502).json({ success: false, error: message });
     }
   }
 );
