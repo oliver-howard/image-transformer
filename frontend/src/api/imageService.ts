@@ -27,6 +27,8 @@ export async function deleteImage(publicId: string): Promise<void> {
     method: "DELETE",
   });
 
+  if (response.status === 404) return;
+
   if (!response.ok) {
     const data = await response.json();
     throw new Error(data.error ?? "Delete failed");
