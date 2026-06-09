@@ -3,6 +3,7 @@ import { useImageUpload } from "./hooks/useImageUpload";
 import { UploadZone } from "./components/UploadZone";
 import { LoadingSpinner } from "./components/LoadingSpinner";
 import { ImageGallery } from "./components/ImageGallery";
+import { downloadImage } from "./utils/download";
 import styles from "./App.module.css";
 
 export default function App() {
@@ -14,6 +15,7 @@ export default function App() {
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   }
+
 
   const previewUrl =
     uploadState.status === "success" ? uploadState.url : null;
@@ -45,9 +47,27 @@ export default function App() {
                     {copied ? "Copied!" : "Copy"}
                   </button>
                 </div>
-                <button className={styles.processAnotherBtn} onClick={processAnother}>
-                  Process another
-                </button>
+                <div className={styles.successActions}>
+                  <div className={styles.successActionsLeft}>
+                    <a
+                      href={uploadState.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className={styles.actionBtn}
+                    >
+                      Open
+                    </a>
+                    <button
+                      className={styles.actionBtn}
+                      onClick={() => downloadImage(uploadState.url, uploadState.publicId)}
+                    >
+                      Download
+                    </button>
+                  </div>
+                  <button className={styles.processAnotherBtn} onClick={processAnother}>
+                    Process another
+                  </button>
+                </div>
               </div>
             )}
 

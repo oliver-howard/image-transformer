@@ -1,5 +1,6 @@
 import { useState } from "react";
 import type { ImageRecord } from "../hooks/useImageUpload";
+import { downloadImage } from "../utils/download";
 import styles from "./ImageCard.module.css";
 
 interface Props {
@@ -14,17 +15,6 @@ export function ImageCard({ image, onDelete }: Props) {
     await navigator.clipboard.writeText(image.url);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
-  }
-
-  async function handleDownload() {
-    const response = await fetch(image.url);
-    const blob = await response.blob();
-    const objectUrl = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = objectUrl;
-    a.download = `${image.publicId}.png`;
-    a.click();
-    URL.revokeObjectURL(objectUrl);
   }
 
   const date = new Date(image.uploadedAt).toLocaleString(undefined, {
@@ -57,7 +47,7 @@ export function ImageCard({ image, onDelete }: Props) {
             >
               Open
             </a>
-            <button className={styles.actionBtn} onClick={handleDownload}>
+            <button className={styles.actionBtn} onClick={() => downloadImage(image.url, image.publicId)}>
               Download
             </button>
           </div>
