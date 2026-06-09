@@ -28,6 +28,7 @@ node_modules
 dist
 .env
 CLAUDE.md
+.claude/
 
 # Test images
 cat.webp

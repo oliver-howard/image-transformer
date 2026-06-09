@@ -1,4 +1,4 @@
-import express, { Request, Response } from "express";
+import express, { Request, Response, NextFunction } from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import multer from "multer";
@@ -13,7 +13,10 @@ import deleteRouter from "./routes/delete";
 
 const app = express();
 const PORT = config.port;
-const upload = multer({ storage: multer.memoryStorage() });
+const upload = multer({
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 20 * 1024 * 1024 },
+});
 
 interface HealthResponse {
   status: string;
@@ -30,7 +33,7 @@ interface UploadErrorResponse {
   error: string;
 }
 
-app.use(cors());
+app.use(cors({ origin: config.frontendUrl }));
 app.use(express.json());
 app.use("/api/images", deleteRouter);
 
@@ -62,6 +65,15 @@ app.post(
     }
   }
 );
+
+app.use((err: unknown, _req: Request, res: Response, _next: NextFunction) => {
+  if (err instanceof multer.MulterError && err.code === "LIMIT_FILE_SIZE") {
+    res.status(413).json({ success: false, error: "File too large. Maximum size is 10 MB." });
+    return;
+  }
+  const message = err instanceof Error ? err.message : "Unexpected error";
+  res.status(500).json({ success: false, error: message });
+});
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
