@@ -2,13 +2,16 @@ import express, { Request, Response } from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import multer from "multer";
-import { removeBackground } from "./services/backgroundRemoval";
-import { flipHorizontal } from "./services/flipImage";
 
 dotenv.config();
 
+import { config } from "./config";
+import { removeBackground } from "./services/backgroundRemoval";
+import { flipHorizontal } from "./services/flipImage";
+import { uploadImage } from "./services/cloudStorage";
+
 const app = express();
-const PORT = process.env.PORT ?? 3001;
+const PORT = config.port;
 const upload = multer({ storage: multer.memoryStorage() });
 
 interface HealthResponse {
@@ -17,8 +20,8 @@ interface HealthResponse {
 
 interface UploadSuccessResponse {
   success: true;
-  message: string;
-  size: number;
+  url: string;
+  publicId: string;
 }
 
 interface UploadErrorResponse {
@@ -47,12 +50,10 @@ app.post(
 
     try {
       const noBg = await removeBackground(req.file.buffer, req.file.mimetype);
-      const result = await flipHorizontal(noBg);
-      res.json({
-        success: true,
-        message: "processed",
-        size: result.length,
-      });
+      const flipped = await flipHorizontal(noBg);
+      const filename = `processed-${Date.now()}`;
+      const { url, publicId } = await uploadImage(flipped, filename);
+      res.json({ success: true, url, publicId });
     } catch (err) {
       const message = err instanceof Error ? err.message : "Unexpected error";
       res.status(502).json({ success: false, error: message });
