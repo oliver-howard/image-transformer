@@ -46,12 +46,12 @@ export function useImageUpload() {
     }
   }
 
-  async function remove(publicId: string) {
+  async function remove(publicId: string): Promise<void> {
     const snapshot = images.find((img) => img.publicId === publicId);
     setImages((prev) => prev.filter((img) => img.publicId !== publicId));
     try {
       await deleteImage(publicId);
-    } catch {
+    } catch (err) {
       if (snapshot) {
         setImages((prev) =>
           [...prev, snapshot].sort(
@@ -59,6 +59,7 @@ export function useImageUpload() {
           )
         );
       }
+      throw err;
     }
   }
 

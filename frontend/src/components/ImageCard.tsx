@@ -6,10 +6,10 @@ import styles from "./ImageCard.module.css";
 
 interface Props {
   image: ImageRecord;
-  onDelete: (publicId: string) => void;
+  onRequestDelete: (publicId: string) => void;
 }
 
-export function ImageCard({ image, onDelete }: Props) {
+export function ImageCard({ image, onRequestDelete }: Props) {
   const [copied, setCopied] = useState(false);
   const [broken, setBroken] = useState(false);
 
@@ -74,7 +74,7 @@ export function ImageCard({ image, onDelete }: Props) {
               <ExternalLinkIcon />
             </a>
           </div>
-          <button className={styles.deleteBtn} onClick={() => onDelete(image.publicId)}>
+          <button className={styles.deleteBtn} onClick={() => onRequestDelete(image.publicId)}>
             Delete
           </button>
         </div>

@@ -1,8 +1,10 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useImageUpload } from "./hooks/useImageUpload";
 import { UploadZone } from "./components/UploadZone";
 import { LoadingSpinner } from "./components/LoadingSpinner";
 import { ImageGallery } from "./components/ImageGallery";
+import { ConfirmModal } from "./components/ConfirmModal";
+import { Toast } from "./components/Toast";
 import { downloadImage } from "./utils/download";
 import { ExternalLinkIcon } from "./components/ExternalLinkIcon";
 import styles from "./App.module.css";
@@ -10,13 +12,37 @@ import styles from "./App.module.css";
 export default function App() {
   const { uploadState, images, upload, remove, processAnother, dismissError } = useImageUpload();
   const [copied, setCopied] = useState(false);
+  const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
+  const [toast, setToast] = useState<{ message: string; type: "success" | "error" } | null>(null);
+
+  useEffect(() => {
+    if (!toast) return;
+    const id = setTimeout(() => setToast(null), 2000);
+    return () => clearTimeout(id);
+  }, [toast]);
+
+  function handleRequestDelete(publicId: string) {
+    if (pendingDeleteId) return;
+    setPendingDeleteId(publicId);
+  }
+
+  async function handleConfirmDelete() {
+    if (!pendingDeleteId) return;
+    const id = pendingDeleteId;
+    setPendingDeleteId(null);
+    try {
+      await remove(id);
+      setToast({ message: "Image deleted.", type: "success" });
+    } catch {
+      setToast({ message: "Failed to delete image.", type: "error" });
+    }
+  }
 
   async function handleCopy(url: string) {
     await navigator.clipboard.writeText(url);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   }
-
 
   const previewUrl =
     uploadState.status === "success" ? uploadState.url : null;
@@ -101,9 +127,15 @@ export default function App() {
 
       {images.length > 0 && (
         <div className={styles.gallerySection}>
-          <ImageGallery images={images} onDelete={remove} />
+          <ImageGallery images={images} onRequestDelete={handleRequestDelete} />
         </div>
       )}
+      <ConfirmModal
+        publicId={pendingDeleteId}
+        onConfirm={handleConfirmDelete}
+        onCancel={() => setPendingDeleteId(null)}
+      />
+      <Toast toast={toast} />
     </div>
   );
 }

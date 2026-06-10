@@ -4,10 +4,10 @@ import styles from "./ImageGallery.module.css";
 
 interface Props {
   images: ImageRecord[];
-  onDelete: (publicId: string) => void;
+  onRequestDelete: (publicId: string) => void;
 }
 
-export function ImageGallery({ images, onDelete }: Props) {
+export function ImageGallery({ images, onRequestDelete }: Props) {
   if (images.length === 0) return null;
 
   return (
@@ -15,7 +15,7 @@ export function ImageGallery({ images, onDelete }: Props) {
       <h2 className={styles.heading}>Transformed images</h2>
       <div className={styles.grid}>
         {images.map((img) => (
-          <ImageCard key={img.publicId} image={img} onDelete={onDelete} />
+          <ImageCard key={img.publicId} image={img} onRequestDelete={onRequestDelete} />
         ))}
       </div>
     </section>
