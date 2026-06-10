@@ -4,6 +4,7 @@ import { UploadZone } from "./components/UploadZone";
 import { LoadingSpinner } from "./components/LoadingSpinner";
 import { ImageGallery } from "./components/ImageGallery";
 import { downloadImage } from "./utils/download";
+import { ExternalLinkIcon } from "./components/ExternalLinkIcon";
 import styles from "./App.module.css";
 
 export default function App() {
@@ -49,6 +50,12 @@ export default function App() {
                 </div>
                 <div className={styles.successActions}>
                   <div className={styles.successActionsLeft}>
+                    <button
+                      className={styles.actionBtn}
+                      onClick={() => downloadImage(uploadState.url, uploadState.publicId)}
+                    >
+                      Download
+                    </button>
                     <a
                       href={uploadState.url}
                       target="_blank"
@@ -56,13 +63,8 @@ export default function App() {
                       className={styles.actionBtn}
                     >
                       Open
+                      <ExternalLinkIcon />
                     </a>
-                    <button
-                      className={styles.actionBtn}
-                      onClick={() => downloadImage(uploadState.url, uploadState.publicId)}
-                    >
-                      Download
-                    </button>
                   </div>
                   <button className={styles.processAnotherBtn} onClick={processAnother}>
                     Process another

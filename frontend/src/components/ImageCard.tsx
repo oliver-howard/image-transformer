@@ -1,6 +1,7 @@
 import { useState } from "react";
 import type { ImageRecord } from "../hooks/useImageUpload";
 import { downloadImage } from "../utils/download";
+import { ExternalLinkIcon } from "./ExternalLinkIcon";
 import styles from "./ImageCard.module.css";
 
 interface Props {
@@ -54,6 +55,13 @@ export function ImageCard({ image, onDelete }: Props) {
         </div>
         <div className={styles.actions}>
           <div className={styles.actionsLeft}>
+            <button
+              className={styles.actionBtn}
+              onClick={() => downloadImage(image.url, image.publicId)}
+              disabled={broken}
+            >
+              Download
+            </button>
             <a
               href={image.url}
               target="_blank"
@@ -63,14 +71,8 @@ export function ImageCard({ image, onDelete }: Props) {
               onClick={broken ? (e) => e.preventDefault() : undefined}
             >
               Open
+              <ExternalLinkIcon />
             </a>
-            <button
-              className={styles.actionBtn}
-              onClick={() => downloadImage(image.url, image.publicId)}
-              disabled={broken}
-            >
-              Download
-            </button>
           </div>
           <button className={styles.deleteBtn} onClick={() => onDelete(image.publicId)}>
             Delete
